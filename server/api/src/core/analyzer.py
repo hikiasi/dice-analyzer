@@ -4,9 +4,6 @@ import numpy as np
 from pydantic import BaseModel
 from typing import List
 from scipy import stats
-from PIL import Image
-import io
-import sys
 import logging
 import cv2
 
