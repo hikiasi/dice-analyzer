@@ -2,7 +2,17 @@
   "builds": [
     {
       "src": "api/index.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "excludeFiles": [
+          "**/__pycache__/**",
+          "**/*.pyc",
+          "**/*.test.py",
+          "**/tests/**",
+          "**/docs/**",
+          "**/examples/**"
+        ]
+      }
     }
   ],
   "routes": [
