@@ -29,8 +29,11 @@ next-env.d.ts
 # Python
 __pycache__/
 *.pyc
-/api/.venv/
 
 # Context folder
 /context/
+
+# New project structure directories
+/client/
+/server/
 
