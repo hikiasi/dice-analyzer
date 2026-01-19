@@ -10,7 +10,16 @@
           "**/*.test.py",
           "**/tests/**",
           "**/docs/**",
-          "**/examples/**"
+          "**/examples/**",
+          "**/numpy/doc/**",
+          "**/numpy/distutils/**",
+          "**/scipy/doc/**",
+          "**/matplotlib/mpl-data/sample_data/**",
+          "**/matplotlib/mpl-data/images/**",
+          "**/cv2/data/**",
+          "**/reportlab/fonts/**",
+          "**/reportlab/graphics/samples/**",
+          "**/reportlab/graphics/barcode/**"
         ]
       }
     }
