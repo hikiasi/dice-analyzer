@@ -3,7 +3,7 @@
 import React from "react"
 
 import { useEffect, useRef, useState } from "react";
-import type { CellData } from "@/lib/dice-analyzer";
+import type { CellData } from "@/lib/types";
 
 interface GridVisualizationProps {
   imageUrl: string;
@@ -57,7 +57,7 @@ export function GridVisualization({ imageUrl, cells, gridSize, a1, a2 }: GridVis
         const y = cell.row * cellHeight;
 
         // Highlight cells outside interval
-        if (!cell.inInterval) {
+        if (!cell.in_interval) { // Corrected from inInterval to in_interval
           ctx.fillStyle = "rgba(239, 68, 68, 0.4)"; // red with transparency
           ctx.fillRect(x, y, cellWidth, cellHeight);
         }
@@ -139,8 +139,8 @@ export function GridVisualization({ imageUrl, cells, gridSize, a1, a2 }: GridVis
           <p className="text-sm text-muted-foreground">
             Концентрация: {hoveredCell.concentration.toFixed(2)}%
           </p>
-          <p className={`text-sm font-medium ${hoveredCell.inInterval ? "text-green-500" : "text-red-500"}`}>
-            {hoveredCell.inInterval ? "В интервале [A1, A2]" : "Вне интервала"}
+          <p className={`text-sm font-medium ${hoveredCell.in_interval ? "text-green-500" : "text-red-500"}`}>
+            {hoveredCell.in_interval ? "В интервале [A1, A2]" : "Вне интервала"}
           </p>
         </div>
       )}

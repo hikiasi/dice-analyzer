@@ -36,17 +36,13 @@ export function downloadCsv(cells: CellData[], filename: string) {
   URL.revokeObjectURL(url);
 }
 
-export function generatePdfReport(result: AnalysisResult, imageUrl: string, filename: string) {
+export function generatePdfReport(
+  result: AnalysisResult, 
+  histogramDataUrl: string,
+  gridDataUrl: string,
+  filename: string
+) {
   const doc = new jsPDF();
-
-  // To support Cyrillic characters, a custom font usually needs to be embedded.
-  // For simplicity, using a generic font that might not display all Cyrillic chars correctly by default.
-  // Full support would require:
-  // 1. Importing font files (e.g., Arial.ttf)
-  // 2. doc.addFont('Arial.ttf', 'Arial', 'normal');
-  // 3. doc.setFont('Arial');
-  // doc.addFont("ArialMS", "Arial", "normal"); // Example if font is already added
-  // doc.setFont("Arial"); // Set font
 
   // Title
   doc.setFontSize(18);
@@ -58,14 +54,12 @@ export function generatePdfReport(result: AnalysisResult, imageUrl: string, file
   doc.text(`Размер изображения: ${result.image_width} x ${result.image_height} px`, 10, 26);
   doc.text(`Размер сетки: ${result.grid_size} x ${result.grid_size} (${result.total_cells} ячеек)`, 10, 32);
   doc.text(`Материал: ${result.material}`, 10, 38);
-  // Add magnification, if available in result
   doc.text(`Кратность увеличения: ${result.magnification || 'N/A'}`, 10, 44);
-
 
   // Summary Table
   doc.setFontSize(14);
   doc.text("Основные результаты", 10, 56);
-  doc.autoTable({
+  (doc as any).autoTable({
     startY: 60,
     head: [['Параметр', 'Значение']],
     body: [
@@ -80,8 +74,8 @@ export function generatePdfReport(result: AnalysisResult, imageUrl: string, file
       ['Заключение', result.verdict],
     ],
     theme: 'grid',
-    styles: { font: "helvetica", fontStyle: "normal" }, // Use helvetica as it's default and supports basic Latin. Cyrillic support requires custom fonts.
-    headStyles: { fillColor: [22, 163, 74] }, // Green-ish color
+    styles: { font: "helvetica", fontStyle: "normal" },
+    headStyles: { fillColor: [22, 163, 74] },
   });
 
   // Suitability
@@ -89,12 +83,25 @@ export function generatePdfReport(result: AnalysisResult, imageUrl: string, file
   doc.setFontSize(14);
   doc.text("Заключение для применения", 10, suitabilityY);
   doc.setFontSize(12);
-  const splitText = doc.splitTextToSize(result.suitability, 180); // 180mm width
+  const splitText = doc.splitTextToSize(result.suitability, 180);
   doc.text(splitText, 10, suitabilityY + 6);
 
-  // Placeholder for charts (will be implemented later)
-  // To include images of charts, you would need to convert your chart components to images (e.g., base64 data URLs)
-  // For example: doc.addImage(chartDataUrl, 'PNG', 10, nextY, 180, 100);
+  // Add new page for visualizations
+  doc.addPage();
+  doc.setFontSize(14);
+  doc.text("Визуализации", 10, 10);
+  
+  // Add Histogram Image
+  if (histogramDataUrl) {
+    doc.text("Гистограмма распределения", 10, 20);
+    doc.addImage(histogramDataUrl, 'PNG', 10, 25, 180, 90);
+  }
+
+  // Add Grid Image
+  if (gridDataUrl) {
+    doc.text("Сетка анализа", 10, 125);
+    doc.addImage(gridDataUrl, 'PNG', 10, 130, 180, 135);
+  }
 
   doc.save(filename);
 }

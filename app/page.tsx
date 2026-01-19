@@ -50,7 +50,7 @@ export default function DICEAnalyzer() {
     formData.append("grid_size", String(gridSize));
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/analyze", {
+      const response = await fetch("/api/analyze", {
         method: "POST",
         body: formData,
       });
@@ -75,15 +75,13 @@ export default function DICEAnalyzer() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center gap-4 px-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Microscope className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold tracking-tight">DICE Analyzer</h1>
-              <p className="text-xs text-muted-foreground">Информационно-энтропийный анализ</p>
-            </div>
+        <div className="flex h-16 items-center gap-4 px-4">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <Microscope className="h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold tracking-tight">DICE Analyzer</h1>
+            <p className="text-xs text-muted-foreground">Информационно-энтропийный анализ</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <span className="text-xs text-muted-foreground hidden sm:inline">v1.0.0</span>
@@ -91,7 +89,7 @@ export default function DICEAnalyzer() {
         </div>
       </header>
 
-      <main className="container px-4 py-6">
+      <main className="max-w-screen-2xl mx-auto px-4 py-6">
         <div className="grid gap-6 lg:grid-cols-[350px_1fr]">
           {/* Sidebar - Controls */}
           <div className="space-y-4">
@@ -264,7 +262,7 @@ export default function DICEAnalyzer() {
 
       {/* Footer */}
       <footer className="border-t border-border mt-8">
-        <div className="container px-4 py-4">
+        <div className="px-4 py-4">
           <p className="text-xs text-muted-foreground text-center">
             DICE Analyzer - Информационно-энтропийный метод оценки однородности технического углерода в композитах
           </p>
