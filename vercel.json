@@ -7,12 +7,12 @@
   ],
   "functions": {
     "api/index.py": {
-      "runtime": "python@3.8"
+      "runtime": "python3.9"
     }
   },
   "build": {
     "env": {
-      "PYTHON_VERSION": "3.8"
+      "PYTHON_VERSION": "3.9"
     }
   }
 }
