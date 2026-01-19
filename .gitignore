@@ -38,4 +38,5 @@ client/node_modules/
 server/api/.venv/
 server/api/__pycache__/
 
+#Projects tasks
 /tasks/
