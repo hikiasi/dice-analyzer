@@ -1,53 +1,27 @@
 ## Relevant Files
 
-- `tasks/tasks-prd-dice-analysis-enhancements.md` - Этот файл, содержащий список задач.
-- `backend/main.py` - Новый файл: основной код для FastAPI сервера.
-- `backend/requirements.txt` - Новый файл: зависимости Python для бэкенда.
-- `app/page.tsx` - Модификация: интеграция с бэкендом, отправка запросов.
-- `components/results-panel.tsx` - Модификация: добавление новых вкладок и кнопок экспорта.
-- `components/histogram-chart.tsx` - Модификация: добавление отображения границ A1/A2.
-- `components/ui/data-table.tsx` - Новый компонент: таблица для отображения данных по 225 ячейкам.
-- `lib/utils.ts` - Модификация: возможное добавление функций для генерации отчетов.
-- `lib/dice-analyzer.ts` - Удаление/Архивация: логика будет перенесена на бэкенд.
-- `package.json` - Модификация: добавление зависимостей `jspdf` и `jspdf-autotable` для экспорта в PDF.
+- `server/api/src/core/analyzer.py` - Core logic for statistical analysis. This file will be modified to update the calculation and formatting of M[X], Δ, A1, and A2.
+- `client/components/results-panel.tsx` - Displays the statistical results. This file will be updated to correctly render the new data format.
+- `client/components/histogram-chart.tsx` - Visualizes the data distribution. This file will be updated to use the new data dimensionality for its axes and tooltips.
+- `client/lib/types.ts` - Contains TypeScript type definitions. May need updates to reflect changes in the API response structure.
 
 ### Notes
-- **Важное замечание по формуле:** Перед реализацией задачи 1.4 мне потребуется ваше уточнение по переменным `d`, `n`, и `n_i` в сложных формулах (3 и 4) из `Method_algorithm.md`. Без этого точная реализация невозможна.
-- Тесты для новых компонентов будут создаваться по мере необходимости.
+
+- The backend is a Python Flask server, and the frontend is a Next.js application.
+- Backend changes must be validated to ensure they produce values at the scale and precision described in `context/new.md`.
+- Frontend components should be checked to ensure they handle the new data format gracefully.
 
 ## Tasks
 
-- [x] **1.0 Настройка бэкенда и реализация основной логики**
-  - [x] 1.1 Создать директорию `backend` и настроить виртуальное окружение Python.
-  - [x] 1.2 Создать `backend/requirements.txt` с зависимостями (`fastapi`, `uvicorn`, `numpy`, `scipy`, `Pillow`, `python-multipart`) и установить их.
-  - [x] 1.3 Создать `backend/main.py`, настроить базовое приложение FastAPI с CORS для доступа с фронтенда.
-  - [x] 1.4 Реализовать в `backend/main.py` эндпоинт `/analyze`, который принимает изображение и параметры.
-  - [x] 1.5 Реализовать логику обработки изображения: разделение на ячейки, расчет средней яркости.
-  - [x] 1.6 Реализовать логику расчета концентрации и всех статистических параметров (M[X], H(P), и т.д.).
-  - [x] 1.7 **Реализовать расчет границ A1 и A2, используя сложные формулы (3 и 4) из `Method_algorithm.md`.**
-  - [x] 1.8 Сформировать и вернуть полный JSON-ответ со всеми результатами анализа.
-
-- [x] **2.0 Интеграция фронтенда и бэкенда**
-  - [x] 2.1 Модифицировать обработчик нажатия кнопки "Начать анализ" в `app/page.tsx` для отправки `fetch` запроса на бэкенд.
-  - [x] 2.2 Реализовать передачу изображения и параметров в `FormData`.
-  - [x] 2.3 Настроить получение JSON-ответа от бэкенда и обновление состояния приложения.
-  - [x] 2.4 Добавить обработку ошибок API (например, если сервер недоступен или вернул ошибку).
-  - [x] 2.5 Заархивировать или удалить старый файл с логикой `lib/dice-analyzer.ts`, так как расчеты теперь выполняются на сервере.
-
-- [x] **3.0 Визуализация детальных результатов**
-  - [x] 3.1 Создать новый компонент `components/ui/data-table.tsx` для отображения данных по ячейкам.
-  - [x] 3.2 Встроить `data-table.tsx` в `components/results-panel.tsx` в новую вкладку "Таблица данных".
-  - [x] 3.3 Модифицировать `components/histogram-chart.tsx` для получения `M[X]`, `A1`, `A2` и отображения их в виде вертикальных линий или закрашенной области.
-
-- [x] **4.0 Реализация экспорта данных**
-  - [x] 4.1 Добавить кнопку "Скачать CSV" в `components/results-panel.tsx`.
-  - [x] 4.2 Реализовать функцию для генерации и скачивания CSV-файла на основе данных о ячейках.
-  - [x] 4.3 Установить зависимости `jspdf` и `jspdf-autotable`.
-  - [x] 4.4 Добавить кнопку "Скачать PDF" в `components/results-panel.tsx`.
-  - [x] 4.5 Реализовать функцию для генерации PDF-отчета, включающего основные параметры, выводы, гистограмму и карту распределения.
-
-- [x] **5.0 Финальное тестирование и доработка**
-  - [x] 5.1 Провести полное ручное тестирование всего функционала: от загрузки изображения до скачивания отчетов.
-  - [x] 5.2 Исправить возможные ошибки в UI и логике.
-  - [x] 5.3 Обновить `README.md` проекта, добавив инструкцию по запуску бэкенд-сервера вместе с фронтендом.
-  - [x] 5.4 Удалить временные и неиспользуемые файлы.
+- [ ] 1.0 Update Backend Analysis Logic
+  - [ ] 1.1 Modify `analyzer.py` to scale the Mathematical Expectation (M[X]) to represent "mass parts" (tens).
+  - [ ] 1.2 Adjust the calculation of the Interval (Δ) to be in units (e.g., 2.0-8.0).
+  - [ ] 1.3 Implement rounding for all statistical outputs (M[X], Δ, A1, A2) to one decimal place.
+  - [ ] 1.4 Test the backend changes with sample data to confirm the output matches the requirements in `context/new.md` and `context/recept.md`.
+- [ ] 2.0 Update Frontend Components
+  - [ ] 2.1 Modify the `results-panel.tsx` component to correctly display the rounded and scaled values from the API.
+  - [ ] 2.2 Update the `histogram-chart.tsx` component to adjust its x-axis and tooltips to the new data scale.
+  - [ ] 2.3 Review and update type definitions in `client/lib/types.ts` if the API response structure has changed.
+- [ ] 3.0 Verification
+  - [ ] 3.1 Perform an end-to-end test by uploading an image and verifying the entire flow: backend calculation, API response, and frontend display.
+  - [ ] 3.2 Confirm that all UI labels and chart details reflect the new, physically meaningful units.

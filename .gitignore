@@ -37,6 +37,7 @@ __pycache__/
 client/node_modules/
 server/api/.venv/
 server/api/__pycache__/
+client/.next/
 
 #Projects tasks
 /tasks/
