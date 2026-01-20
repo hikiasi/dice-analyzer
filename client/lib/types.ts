@@ -34,6 +34,7 @@ export interface AnalysisResult {
 
   entropy: number;
   max_entropy: number;
+  entropy_ratio: number;
   
   delta: number;
   a1: number;
