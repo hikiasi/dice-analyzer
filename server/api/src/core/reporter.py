@@ -51,12 +51,12 @@ def create_histogram(result: AnalysisResult) -> io.BytesIO:
     ax.bar(bin_centers, counts, width=widths, color=bar_colors, edgecolor='black', alpha=0.7)
 
     # Add vertical lines for Mean, A1, A2
-    ax.axvline(result.mean_concentration, color='orange', linestyle='--', linewidth=2, label=f'M[X] = {result.mean_concentration:.2f}')
-    ax.axvline(result.a1, color='blue', linestyle=':', linewidth=2, label=f'A1 = {result.a1:.2f}')
-    ax.axvline(result.a2, color='blue', linestyle=':', linewidth=2, label=f'A2 = {result.a2:.2f}')
+    ax.axvline(result.mean_concentration, color='orange', linestyle='--', linewidth=2, label=f'M[X] = {result.mean_concentration:.1f}')
+    ax.axvline(result.a1, color='blue', linestyle=':', linewidth=2, label=f'A1 = {result.a1:.1f}')
+    ax.axvline(result.a2, color='blue', linestyle=':', linewidth=2, label=f'A2 = {result.a2:.1f}')
     
     ax.set_title('Гистограмма распределения концентрации', fontname=FONT_NAME)
-    ax.set_xlabel('Концентрация, %', fontname=FONT_NAME)
+    ax.set_xlabel('Концентрация, м.ч.', fontname=FONT_NAME)
     ax.set_ylabel('Количество ячеек', fontname=FONT_NAME)
     ax.legend(prop={'family': FONT_NAME})
     ax.grid(True, which='both', linestyle='--', linewidth=0.5)
@@ -108,11 +108,11 @@ def generate_pdf_report(result: AnalysisResult) -> io.BytesIO:
     results_data = [
         ['Параметр', 'Значение'],
         ['D_IEI', f"{result.d_iei:.1f}%"],
-        ['M[X] (среднее)', f"{result.mean_concentration:.2f}%"],
+        ['M[X] (среднее)', f"{result.mean_concentration:.1f} м.ч."],
         ['H(P) (энтропия)', f"{result.entropy:.3f} бит"],
-        ['Δ (полуширина)', f"{result.delta:.2f}%"],
-        ['A1 (левая граница)', f"{result.a1:.2f}%"],
-        ['A2 (правая граница)', f"{result.a2:.2f}%"],
+        ['Δ (полуширина)', f"{result.delta:.1f} м.ч."],
+        ['A1 (левая граница)', f"{result.a1:.1f} м.ч."],
+        ['A2 (правая граница)', f"{result.a2:.1f} м.ч."],
         ['Ячеек в интервале', f"{result.cells_in_interval} из {result.total_cells}"],
         ['Степень однородности', result.homogeneity_grade],
         ['Заключение', result.verdict],

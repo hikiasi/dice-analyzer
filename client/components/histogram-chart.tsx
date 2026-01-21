@@ -34,6 +34,19 @@ export function HistogramChart({ histogram, mean_concentration, a1, a2 }: Histog
   const colorInInterval = "#22c55e"; // green-500
   const colorOutside = "#ef4444"; // red-500
 
+  // Calculate the domain to ensure A1 and A2 lines are always visible
+  const dataMin = chartData[0]?.bin_start ?? a1;
+  const dataMax = chartData[chartData.length - 1]?.bin_end ?? a2;
+  
+  const absoluteMin = Math.min(a1, dataMin);
+  const absoluteMax = Math.max(a2, dataMax);
+  const padding = (absoluteMax - absoluteMin) * 0.05; // 5% padding
+
+  const domainMin = Math.floor(absoluteMin - padding);
+  const domainMax = Math.ceil(absoluteMax + padding);
+
+  const formatXAxis = (tick: number) => tick.toFixed(1);
+
   return (
     <div className="w-full h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -41,29 +54,33 @@ export function HistogramChart({ histogram, mean_concentration, a1, a2 }: Histog
           data={chartData}
           margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#444" opacity={0.5} />
           <XAxis
-            dataKey="name"
-            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
-            tickLine={{ stroke: "hsl(var(--border))" }}
-            axisLine={{ stroke: "hsl(var(--border))" }}
+            type="number"
+            dataKey="bin_center"
+            domain={[domainMin, domainMax]}
+            tickCount={15}
+            tickFormatter={formatXAxis} 
+            tick={{ fill: "#FFFFFF", fontSize: 11 }}
+            tickLine={{ stroke: "#888888" }}
+            axisLine={{ stroke: "#888888" }}
             label={{
-              value: "Концентрация ТУ, %",
+              value: "Концентрация ТУ, м.ч.",
               position: "bottom",
               offset: 40,
-              fill: "hsl(var(--muted-foreground))",
+              fill: "#FFFFFF",
               fontSize: 12,
             }}
           />
           <YAxis
-            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
-            tickLine={{ stroke: "hsl(var(--border))" }}
-            axisLine={{ stroke: "hsl(var(--border))" }}
+            tick={{ fill: "#FFFFFF", fontSize: 11 }}
+            tickLine={{ stroke: "#888888" }}
+            axisLine={{ stroke: "#888888" }}
             label={{
               value: "Доля ячеек, %",
               angle: -90,
               position: "insideLeft",
-              fill: "hsl(var(--muted-foreground))",
+              fill: "#FFFFFF",
               fontSize: 12,
             }}
           />
@@ -74,7 +91,7 @@ export function HistogramChart({ histogram, mean_concentration, a1, a2 }: Histog
                 return (
                   <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
                     <p className="text-sm font-medium text-foreground">
-                      Интервал: {data.bin_start.toFixed(1)} - {data.bin_end.toFixed(1)}%
+                      Интервал: {data.bin_start.toFixed(1)} - {data.bin_end.toFixed(1)} м.ч.
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Количество ячеек: {data.count}

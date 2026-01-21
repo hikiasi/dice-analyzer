@@ -119,18 +119,18 @@ export function ResultsPanel({ result, imageUrl }: ResultsPanelProps) {
             <CardContent><p className="text-sm text-muted-foreground leading-relaxed">{result.suitability}</p></CardContent>
           </Card>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Card><CardContent className="pt-4 pb-4"><p className="text-xs text-muted-foreground">M[X] (среднее)</p><p className="text-2xl font-bold">{result.mean_concentration.toFixed(2)}</p><p className="text-xs text-muted-foreground">%</p></CardContent></Card>
+            <Card><CardContent className="pt-4 pb-4"><p className="text-xs text-muted-foreground">M[X] (среднее)</p><p className="text-2xl font-bold">{result.mean_concentration.toFixed(1)}</p><p className="text-xs text-muted-foreground">м.ч.</p></CardContent></Card>
             <Card><CardContent className="pt-4 pb-4"><p className="text-xs text-muted-foreground">H(P) (энтропия)</p><p className="text-2xl font-bold">{result.entropy.toFixed(3)}</p><p className="text-xs text-muted-foreground">бит</p></CardContent></Card>
-            <Card><CardContent className="pt-4 pb-4"><p className="text-xs text-muted-foreground">Delta (полуширина)</p><p className="text-2xl font-bold">{result.delta.toFixed(2)}</p><p className="text-xs text-muted-foreground">%</p></CardContent></Card>
-            <Card><CardContent className="pt-4 pb-4"><p className="text-xs text-muted-foreground">Sigma (СКО)</p><p className="text-2xl font-bold">{result.std_concentration.toFixed(2)}</p><p className="text-xs text-muted-foreground">%</p></CardContent></Card>
+            <Card><CardContent className="pt-4 pb-4"><p className="text-xs text-muted-foreground">Delta (полуширина)</p><p className="text-2xl font-bold">{result.delta.toFixed(1)}</p><p className="text-xs text-muted-foreground">м.ч.</p></CardContent></Card>
+            <Card><CardContent className="pt-4 pb-4"><p className="text-xs text-muted-foreground">Sigma (СКО)</p><p className="text-2xl font-bold">{result.std_concentration.toFixed(2)}</p><p className="text-xs text-muted-foreground">м.ч.</p></CardContent></Card>
           </div>
           <Card>
             <CardHeader className="pb-3"><CardTitle className="text-base">Информационно-энтропийный интервал (ИЭИ)</CardTitle><CardDescription>Границы допустимого разброса концентрации</CardDescription></CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20"><p className="text-xs text-muted-foreground">A1 (левая граница)</p><p className="text-xl font-bold text-blue-500">{result.a1.toFixed(2)}%</p></div>
-                <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20"><p className="text-xs text-muted-foreground">M[X] (среднее)</p><p className="text-xl font-bold text-amber-500">{result.mean_concentration.toFixed(2)}%</p></div>
-                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20"><p className="text-xs text-muted-foreground">A2 (правая граница)</p><p className="text-xl font-bold text-blue-500">{result.a2.toFixed(2)}%</p></div>
+                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20"><p className="text-xs text-muted-foreground">A1 (левая граница)</p><p className="text-xl font-bold text-blue-500">{result.a1.toFixed(1)} м.ч.</p></div>
+                <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20"><p className="text-xs text-muted-foreground">M[X] (среднее)</p><p className="text-xl font-bold text-amber-500">{result.mean_concentration.toFixed(1)} м.ч.</p></div>
+                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20"><p className="text-xs text-muted-foreground">A2 (правая граница)</p><p className="text-xl font-bold text-blue-500">{result.a2.toFixed(1)} м.ч.</p></div>
               </div>
               <div className="mt-4 text-center"><p className="text-sm text-muted-foreground">Ячеек в интервале: <span className="font-semibold text-foreground">{result.cells_in_interval}</span> из <span className="font-semibold text-foreground">{result.total_cells}</span></p></div>
             </CardContent>

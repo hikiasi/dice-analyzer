@@ -31,7 +31,8 @@ __pycache__/
 *.pyc
 
 # Context folder
-/context/
+context/
+tasks/
 
 # Project structure specific ignores
 client/node_modules/
@@ -40,4 +41,3 @@ server/api/__pycache__/
 client/.next/
 
 #Projects tasks
-/tasks/
