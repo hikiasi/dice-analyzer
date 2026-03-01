@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import type { AnalysisResult } from "@/lib/types";
 import { BarChart3, Grid3X3, FileText, CheckCircle2, XCircle, AlertTriangle, Table, Download, Loader2 } from "lucide-react";
 import { downloadCsv } from "@/lib/utils";
+import { API_BASE_URL } from "@/lib/config";
 
 interface ResultsPanelProps {
   result: AnalysisResult;
@@ -48,7 +49,7 @@ export function ResultsPanel({ result, imageUrl }: ResultsPanelProps) {
   const handleDownloadPdf = useCallback(async () => {
     setIsPrinting(true);
     try {
-      const response = await fetch("/api/report", {
+      const response = await fetch(`${API_BASE_URL}/report`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
