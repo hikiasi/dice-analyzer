@@ -32,29 +32,49 @@ function verifyKey(key) {
 
 function getLicenseStatus() {
   const hwid = getHWID();
+  let usageCount = 0;
   if (fs.existsSync(LICENSE_FILE)) {
     try {
       const data = JSON.parse(fs.readFileSync(LICENSE_FILE, 'utf8'));
-      if (verifyKey(data.key)) {
-        return { isActivated: true, hwid };
+      usageCount = data.usageCount || 0;
+      if (data.key && verifyKey(data.key)) {
+        return { isActivated: true, hwid, usageCount };
       }
     } catch (e) {
       console.error('Failed to read license file', e);
     }
   }
-  return { isActivated: false, hwid };
+  return { isActivated: false, hwid, usageCount };
 }
 
 function activate(key) {
   if (verifyKey(key)) {
-    fs.writeFileSync(LICENSE_FILE, JSON.stringify({ key }));
+    let data = {};
+    if (fs.existsSync(LICENSE_FILE)) {
+      data = JSON.parse(fs.readFileSync(LICENSE_FILE, 'utf8'));
+    }
+    data.key = key;
+    fs.writeFileSync(LICENSE_FILE, JSON.stringify(data));
     return true;
   }
   return false;
 }
 
+function incrementUsage() {
+  let data = { usageCount: 0 };
+  if (fs.existsSync(LICENSE_FILE)) {
+    try {
+      data = JSON.parse(fs.readFileSync(LICENSE_FILE, 'utf8'));
+    } catch (e) {}
+  }
+  data.usageCount = (data.usageCount || 0) + 1;
+  fs.writeFileSync(LICENSE_FILE, JSON.stringify(data));
+  return data.usageCount;
+}
+
 module.exports = {
   getHWID,
   getLicenseStatus,
-  activate
+  activate,
+  incrementUsage
 };

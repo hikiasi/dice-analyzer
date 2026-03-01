@@ -14,7 +14,7 @@ import { useLicense } from "@/components/license-provider";
 import { API_BASE_URL } from "@/lib/config";
 
 export default function DICEAnalyzer() {
-  const { isActivated, hwid, activate } = useLicense();
+  const { isActivated, hwid, usageCount, trialLimit, isTrialExpired, activate, incrementUsage } = useLicense();
   const [activationKey, setActivationKey] = useState("");
   const [isActivating, setIsActivating] = useState(false);
 
@@ -69,6 +69,9 @@ export default function DICEAnalyzer() {
       const analysisResult: AnalysisResult = await response.json();
       setResult(analysisResult);
 
+      // Increment usage count after successful analysis
+      await incrementUsage();
+
     } catch (error) {
       console.error("Analysis error:", error);
       alert(`Ошибка анализа: ${error instanceof Error ? error.message : "Неизвестная ошибка"}`);
@@ -88,7 +91,15 @@ export default function DICEAnalyzer() {
 
   return (
     <div className="min-h-screen bg-background relative">
-      {!isActivated && (
+      {/* Trial period indicator */}
+      {!isActivated && !isTrialExpired && (
+        <div className="bg-amber-500 text-amber-950 px-4 py-1 text-xs font-medium text-center">
+          ПРОБНЫЙ ПЕРИОД: осталось {trialLimit - usageCount} анализов из {trialLimit}.
+        </div>
+      )}
+
+      {/* Activation Overlay (only when trial is expired and not activated) */}
+      {!isActivated && isTrialExpired && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
           <Card className="w-full max-w-md shadow-2xl border-primary">
             <CardHeader className="text-center">
@@ -97,7 +108,7 @@ export default function DICEAnalyzer() {
               </div>
               <CardTitle>Активация программы</CardTitle>
               <CardDescription>
-                Для использования программы необходимо ввести лицензионный ключ.
+                Пробный период закончен. Для дальнейшего использования необходимо ввести лицензионный ключ.
                 Отправьте ваш ID разработчику для получения ключа.
               </CardDescription>
             </CardHeader>
@@ -132,6 +143,7 @@ export default function DICEAnalyzer() {
         </div>
       )}
 
+      {/* Watermark (visible if not activated) */}
       {!isActivated && (
         <div className="fixed inset-0 pointer-events-none z-[60] overflow-hidden flex flex-wrap justify-center items-center gap-20 opacity-[0.03] rotate-[-30deg] scale-150">
           {Array.from({ length: 50 }).map((_, i) => (
