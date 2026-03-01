@@ -9,9 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ImageUpload } from "@/components/image-upload";
 import { ResultsPanel } from "@/components/results-panel";
 import { type AnalysisResult } from "@/lib/types"; // Updated import
-import { Microscope, Play, Settings, Info, Loader2 } from "lucide-react";
+import { Microscope, Play, Settings, Info, Loader2, Key } from "lucide-react";
+import { useLicense } from "@/components/license-provider";
+import { API_BASE_URL } from "@/lib/config";
 
 export default function DICEAnalyzer() {
+  const { isActivated, hwid, activate } = useLicense();
+  const [activationKey, setActivationKey] = useState("");
+  const [isActivating, setIsActivating] = useState(false);
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
@@ -50,7 +56,7 @@ export default function DICEAnalyzer() {
     formData.append("grid_size", String(gridSize));
 
     try {
-      const response = await fetch("/api/analyze", {
+      const response = await fetch(`${API_BASE_URL}/analyze`, {
         method: "POST",
         body: formData,
       });
@@ -71,8 +77,69 @@ export default function DICEAnalyzer() {
     }
   }, [imageFile, gridSize, material, magnification]);
 
+  const handleActivate = async () => {
+    setIsActivating(true);
+    const success = await activate(activationKey);
+    setIsActivating(false);
+    if (!success) {
+      alert("Неверный ключ активации");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {!isActivated && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+          <Card className="w-full max-w-md shadow-2xl border-primary">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <Key className="h-6 w-6 text-primary" />
+              </div>
+              <CardTitle>Активация программы</CardTitle>
+              <CardDescription>
+                Для использования программы необходимо ввести лицензионный ключ.
+                Отправьте ваш ID разработчику для получения ключа.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Ваш Hardware ID (HWID)</Label>
+                <div className="flex gap-2">
+                  <Input readOnly value={hwid} className="bg-muted font-mono text-xs" />
+                  <Button variant="outline" size="sm" onClick={() => {
+                    navigator.clipboard.writeText(hwid);
+                    alert("ID скопирован в буфер обмена");
+                  }}>
+                    Копировать
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="key">Ключ активации</Label>
+                <Input
+                  id="key"
+                  placeholder="Введите ключ"
+                  value={activationKey}
+                  onChange={(e) => setActivationKey(e.target.value)}
+                />
+              </div>
+              <Button className="w-full" onClick={handleActivate} disabled={!activationKey || isActivating}>
+                {isActivating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Play className="h-4 w-4 mr-2" />}
+                Активировать
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {!isActivated && (
+        <div className="fixed inset-0 pointer-events-none z-[60] overflow-hidden flex flex-wrap justify-center items-center gap-20 opacity-[0.03] rotate-[-30deg] scale-150">
+          {Array.from({ length: 50 }).map((_, i) => (
+            <span key={i} className="text-4xl font-bold whitespace-nowrap">DEMO VERSION - UNLICENSED</span>
+          ))}
+        </div>
+      )}
+
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-16 items-center gap-4 px-4">
