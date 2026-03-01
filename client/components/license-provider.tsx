@@ -5,21 +5,31 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 interface LicenseContextType {
   isActivated: boolean;
   hwid: string;
+  usageCount: number;
+  trialLimit: number;
+  isTrialExpired: boolean;
   checkActivation: () => Promise<void>;
   activate: (key: string) => Promise<boolean>;
+  incrementUsage: () => Promise<void>;
 }
+
+const TRIAL_LIMIT = 30;
 
 const LicenseContext = createContext<LicenseContextType | undefined>(undefined);
 
 export function LicenseProvider({ children }: { children: ReactNode }) {
   const [isActivated, setIsActivated] = useState(false);
   const [hwid, setHwid] = useState("");
+  const [usageCount, setUsageCount] = useState(0);
+
+  const isTrialExpired = usageCount >= TRIAL_LIMIT;
 
   const checkActivation = async () => {
     if (window.electronAPI) {
       const status = await window.electronAPI.getLicenseStatus();
       setIsActivated(status.isActivated);
       setHwid(status.hwid);
+      setUsageCount(status.usageCount || 0);
     } else {
       // Fallback for web development
       setIsActivated(process.env.NODE_ENV === "development");
@@ -38,12 +48,22 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
+  const incrementUsage = async () => {
+    if (window.electronAPI) {
+      const newCount = await window.electronAPI.incrementUsage();
+      setUsageCount(newCount);
+    }
+  };
+
   useEffect(() => {
     checkActivation();
   }, []);
 
   return (
-    <LicenseContext.Provider value={{ isActivated, hwid, checkActivation, activate }}>
+    <LicenseContext.Provider value={{
+      isActivated, hwid, usageCount, trialLimit: TRIAL_LIMIT, isTrialExpired,
+      checkActivation, activate, incrementUsage
+    }}>
       {children}
     </LicenseContext.Provider>
   );
@@ -60,8 +80,9 @@ export function useLicense() {
 declare global {
   interface Window {
     electronAPI: {
-      getLicenseStatus: () => Promise<{ isActivated: boolean; hwid: string }>;
+      getLicenseStatus: () => Promise<{ isActivated: boolean; hwid: string; usageCount: number }>;
       activate: (key: string) => Promise<boolean>;
+      incrementUsage: () => Promise<number>;
     };
   }
 }

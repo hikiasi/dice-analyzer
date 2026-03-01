@@ -1,7 +1,8 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, protocol } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
-const { getLicenseStatus, activate } = require('./licensing');
+const fs = require('fs');
+const { getLicenseStatus, activate, incrementUsage } = require('./licensing');
 
 let mainWindow;
 let backendProcess;
@@ -25,7 +26,8 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:3000');
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../client/out/index.html'));
+    // Using the registered 'app' protocol to load files
+    mainWindow.loadURL('app://./index.html');
   }
 
   mainWindow.on('closed', () => {
@@ -67,7 +69,18 @@ function startBackend() {
   });
 }
 
-app.on('ready', () => {
+app.whenReady().then(() => {
+  // Register custom protocol to handle Next.js absolute paths correctly
+  protocol.registerFileProtocol('app', (request, callback) => {
+    const url = request.url.replace('app://./', '');
+    const isAsset = url.startsWith('_next/');
+    const filePath = isAsset
+      ? path.join(__dirname, '../client/out', url)
+      : path.join(__dirname, '../client/out', url || 'index.html');
+
+    callback({ path: filePath });
+  });
+
   startBackend();
   createWindow();
 });
@@ -97,4 +110,8 @@ ipcMain.handle('get-license-status', () => {
 
 ipcMain.handle('activate', (event, key) => {
   return activate(key);
+});
+
+ipcMain.handle('increment-usage', () => {
+  return incrementUsage();
 });
