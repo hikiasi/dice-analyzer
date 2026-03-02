@@ -19,15 +19,12 @@ app = FastAPI(
 )
 
 # Configure CORS
-origins = [
-    "http://localhost:3000",  # Allow your Next.js frontend
-    "http://127.0.0.1:3000",
-]
-
+# For the desktop application, we allow all origins to avoid issues with Electron's 'app://' or 'null' origin.
+# Note: allow_credentials must be False when allow_origins is ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
