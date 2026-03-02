@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, protocol } = require('electron');
+const { app, BrowserWindow, ipcMain, protocol, net } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
@@ -15,6 +15,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      webSecurity: false, // Disabling webSecurity to allow local API calls across different origins/protocols
     },
     title: "DICE Analyzer",
     autoHideMenuBar: true
@@ -61,9 +62,12 @@ function startBackend() {
   console.log(`Starting backend with ${pythonExe} ${args.join(' ')}`);
   logStream.write(`[${new Date().toISOString()}] Starting backend: ${pythonExe} ${args.join(' ')}\n`);
 
-  backendProcess = spawn(pythonExe, args, {
+  // Wrap path in quotes to handle spaces correctly
+  const command = isDev ? pythonExe : `"${pythonExe}"`;
+
+  backendProcess = spawn(command, args, {
     env: { ...process.env, PORT: '8000' },
-    shell: true // Added shell: true for better compatibility on Windows
+    shell: true
   });
 
   backendProcess.stdout.on('data', (data) => {
@@ -89,14 +93,24 @@ function startBackend() {
 
 app.whenReady().then(() => {
   // Register custom protocol to handle Next.js absolute paths correctly
-  protocol.registerFileProtocol('app', (request, callback) => {
-    const url = request.url.replace('app://./', '');
-    const isAsset = url.startsWith('_next/');
-    const filePath = isAsset
-      ? path.join(__dirname, '../client/out', url)
-      : path.join(__dirname, '../client/out', url || 'index.html');
+  // Using the modern protocol.handle API for Electron 30+
+  protocol.handle('app', (request) => {
+    let url = request.url.replace('app://./', '');
+    if (url === '' || url === '/') url = 'index.html';
 
-    callback({ path: filePath });
+    const isAsset = url.startsWith('_next/');
+    let filePath = isAsset
+      ? path.join(__dirname, '../client/out', url)
+      : path.join(__dirname, '../client/out', url.endsWith('/') ? url + 'index.html' : url);
+
+    // Add .html extension if it's a page and doesn't have it
+    if (!isAsset && !filePath.includes('.') && fs.existsSync(filePath + '.html')) {
+        filePath += '.html';
+    }
+
+    // Convert the file path to a file:// URL for net.fetch
+    const fileUrl = `file://${filePath}`;
+    return net.fetch(fileUrl);
   });
 
   startBackend();
