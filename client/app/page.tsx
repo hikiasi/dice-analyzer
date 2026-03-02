@@ -100,7 +100,7 @@ export default function DICEAnalyzer() {
 
       {/* Activation Overlay (only when trial is expired and not activated) */}
       {!isActivated && isTrialExpired && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
           <Card className="w-full max-w-md shadow-2xl border-primary">
             <CardHeader className="text-center">
               <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
