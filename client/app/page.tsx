@@ -10,8 +10,6 @@ import { ImageUpload } from "@/components/image-upload";
 import { ResultsPanel } from "@/components/results-panel";
 import { type AnalysisResult } from "@/lib/types"; // Updated import
 import { Microscope, Play, Settings, Info, Loader2, Key } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { useLicense } from "@/components/license-provider";
 import { API_BASE_URL } from "@/lib/config";
 
