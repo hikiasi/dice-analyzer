@@ -91,3 +91,9 @@ async def generate_report_endpoint(result: AnalysisResult):
         logging.error(f"An unexpected error occurred during PDF generation: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred during PDF generation: {e}")
 
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    # Explicitly use 127.0.0.1 and add logging for debugging
+    logging.info(f"Starting server on http://127.0.0.1:{port}")
+    uvicorn.run(app, host="127.0.0.1", port=port, log_level="info")
