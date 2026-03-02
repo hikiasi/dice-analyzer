@@ -37,6 +37,8 @@ function createWindow() {
 
 function startBackend() {
   const isDev = process.env.NODE_ENV === 'development';
+  const logFile = path.join(app.getPath('userData'), 'backend.log');
+  const logStream = fs.createWriteStream(logFile, { flags: 'a' });
 
   let pythonExe;
   let args;
@@ -48,24 +50,40 @@ function startBackend() {
     // Path to the bundled executable
     pythonExe = path.join(process.resourcesPath, 'backend', 'dice_backend.exe');
     args = [];
+
+    if (!fs.existsSync(pythonExe)) {
+      console.error(`Backend executable not found at: ${pythonExe}`);
+      logStream.write(`[${new Date().toISOString()}] Backend executable not found at: ${pythonExe}\n`);
+      return;
+    }
   }
 
   console.log(`Starting backend with ${pythonExe} ${args.join(' ')}`);
+  logStream.write(`[${new Date().toISOString()}] Starting backend: ${pythonExe} ${args.join(' ')}\n`);
 
   backendProcess = spawn(pythonExe, args, {
-    env: { ...process.env, PORT: '8000' }
+    env: { ...process.env, PORT: '8000' },
+    shell: true // Added shell: true for better compatibility on Windows
   });
 
   backendProcess.stdout.on('data', (data) => {
     console.log(`Backend: ${data}`);
+    logStream.write(`[${new Date().toISOString()}] STDOUT: ${data}\n`);
   });
 
   backendProcess.stderr.on('data', (data) => {
     console.error(`Backend Error: ${data}`);
+    logStream.write(`[${new Date().toISOString()}] STDERR: ${data}\n`);
   });
 
   backendProcess.on('close', (code) => {
     console.log(`Backend process exited with code ${code}`);
+    logStream.write(`[${new Date().toISOString()}] Backend process exited with code ${code}\n`);
+  });
+
+  backendProcess.on('error', (err) => {
+    console.error(`Failed to start backend process: ${err}`);
+    logStream.write(`[${new Date().toISOString()}] ERROR: ${err}\n`);
   });
 }
 
