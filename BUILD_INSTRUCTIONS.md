@@ -31,9 +31,9 @@
    ```bash
    pip install pyinstaller -r server/api/requirements.txt
    ```
-2. Запустите сборку:
+2. Запустите сборку (команда включает шрифт для PDF):
    ```bash
-   pyinstaller --noconfirm --onefile --name dice_backend --paths server/api server/api/index.py
+   pyinstaller --noconfirm --onefile --name dice_backend --paths server/api --add-data "server/api/src/core/DejaVuSans.ttf;src/core" server/api/index.py
    ```
 3. После завершения файл появится в папке `dist/dice_backend.exe`.
 
