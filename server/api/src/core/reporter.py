@@ -15,9 +15,16 @@ import os
 from .analyzer import AnalysisResult
 
 # --- Font Registration for Cyrillic Support ---
-# IMPORTANT: You need to place a Cyrillic-supporting TTF font file in the api/src/core/ directory.
-# For example, download DejaVuSans.ttf or use an Arial.ttf if available on your system.
-FONT_PATH = os.path.join(os.path.dirname(__file__), 'DejaVuSans.ttf')
+import sys
+
+# Handling path for PyInstaller bundle
+if getattr(sys, 'frozen', False):
+    # PyInstaller creates a temp folder and stores path in _MEIPASS
+    base_path = sys._MEIPASS
+    FONT_PATH = os.path.join(base_path, 'src', 'core', 'DejaVuSans.ttf')
+else:
+    FONT_PATH = os.path.join(os.path.dirname(__file__), 'DejaVuSans.ttf')
+
 FONT_NAME = 'DejaVuSans'
 
 try:
