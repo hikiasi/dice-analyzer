@@ -5,7 +5,7 @@
   "main": "electron/main.js",
   "scripts": {
     "frontend:build": "cd client && npm install && npm run build",
-    "backend:build": "pip install pyinstaller -r server/api/requirements.txt && pyinstaller --noconfirm --onefile --name dice_backend --paths server/api server/api/index.py",
+    "backend:build": "pip install pyinstaller -r server/api/requirements.txt && pyinstaller --noconfirm --onefile --name dice_backend --paths server/api --add-data \"server/api/src/core/DejaVuSans.ttf;src/core\" server/api/index.py",
     "electron:start": "NODE_ENV=development electron .",
     "dist": "npm run frontend:build && electron-builder"
   },
