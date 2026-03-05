@@ -14,7 +14,7 @@ import { useLicense } from "@/components/license-provider";
 import { API_BASE_URL } from "@/lib/config";
 
 export default function DICEAnalyzer() {
-  const { isActivated, hwid, usageCount, trialLimit, isTrialExpired, activate, incrementUsage } = useLicense();
+  const { isActivated, hwid, usageCount, trialLimit, isTrialExpired, activate, incrementUsage, copyToClipboard } = useLicense();
   const [activationKey, setActivationKey] = useState("");
   const [isActivating, setIsActivating] = useState(false);
 
@@ -117,8 +117,8 @@ export default function DICEAnalyzer() {
                 <Label>Ваш Hardware ID (HWID)</Label>
                 <div className="flex gap-2">
                   <Input readOnly value={hwid} className="bg-muted font-mono text-xs" />
-                  <Button variant="outline" size="sm" onClick={() => {
-                    navigator.clipboard.writeText(hwid);
+                  <Button variant="outline" size="sm" onClick={async () => {
+                    await copyToClipboard(hwid);
                     alert("ID скопирован в буфер обмена");
                   }}>
                     Копировать

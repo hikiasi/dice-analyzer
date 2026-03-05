@@ -11,6 +11,7 @@ interface LicenseContextType {
   checkActivation: () => Promise<void>;
   activate: (key: string) => Promise<boolean>;
   incrementUsage: () => Promise<void>;
+  copyToClipboard: (text: string) => Promise<void>;
 }
 
 const TRIAL_LIMIT = 30;
@@ -55,6 +56,14 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const copyToClipboard = async (text: string) => {
+    if (window.electronAPI) {
+      await window.electronAPI.copyToClipboard(text);
+    } else {
+      await navigator.clipboard.writeText(text);
+    }
+  };
+
   useEffect(() => {
     checkActivation();
   }, []);
@@ -62,7 +71,7 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
   return (
     <LicenseContext.Provider value={{
       isActivated, hwid, usageCount, trialLimit: TRIAL_LIMIT, isTrialExpired,
-      checkActivation, activate, incrementUsage
+      checkActivation, activate, incrementUsage, copyToClipboard
     }}>
       {children}
     </LicenseContext.Provider>
@@ -83,6 +92,7 @@ declare global {
       getLicenseStatus: () => Promise<{ isActivated: boolean; hwid: string; usageCount: number }>;
       activate: (key: string) => Promise<boolean>;
       incrementUsage: () => Promise<number>;
+      copyToClipboard: (text: string) => Promise<boolean>;
     };
   }
 }

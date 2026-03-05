@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, protocol, net } = require('electron');
+const { app, BrowserWindow, ipcMain, protocol, net, clipboard, Menu } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
@@ -8,6 +8,8 @@ let mainWindow;
 let backendProcess;
 
 function createWindow() {
+  const isDev = process.env.NODE_ENV === 'development';
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -15,13 +17,21 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      webSecurity: false, // Disabling webSecurity to allow local API calls across different origins/protocols
+      webSecurity: false,
+      devTools: isDev, // Disable DevTools in production
     },
     title: "DICE Analyzer",
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
+    icon: path.join(__dirname, '../client/public/icon.png') // Setting the icon
   });
 
-  const isDev = process.env.NODE_ENV === 'development';
+  // Remove default menu to block DevTools shortcuts
+  if (!isDev) {
+    Menu.setApplicationMenu(null);
+    mainWindow.webContents.on('devtools-opened', () => {
+      mainWindow.webContents.closeDevTools();
+    });
+  }
 
   if (isDev) {
     mainWindow.loadURL('http://localhost:3000');
@@ -146,4 +156,9 @@ ipcMain.handle('activate', (event, key) => {
 
 ipcMain.handle('increment-usage', () => {
   return incrementUsage();
+});
+
+ipcMain.handle('copy-to-clipboard', (event, text) => {
+  clipboard.writeText(text);
+  return true;
 });
