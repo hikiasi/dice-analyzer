@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, protocol, net, clipboard, Menu } = require('electron');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const { getLicenseStatus, activate, incrementUsage } = require('./licensing');
 
@@ -135,7 +135,16 @@ app.on('window-all-closed', () => {
 
 app.on('quit', () => {
   if (backendProcess) {
-    backendProcess.kill();
+    if (process.platform === 'win32') {
+      // Robustly kill the process tree on Windows
+      exec(`taskkill /pid ${backendProcess.pid} /T /F`, (err) => {
+        if (err) {
+          console.error('Failed to kill backend process tree:', err);
+        }
+      });
+    } else {
+      backendProcess.kill();
+    }
   }
 });
 
